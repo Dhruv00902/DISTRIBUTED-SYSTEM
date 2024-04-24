@@ -1,0 +1,73 @@
+This code demonstrates a distributed system using MPI (Message Passing Interface) to calculate the sum of an array. In simpler terms, it splits the workload of adding numbers in an array across multiple processors working together to get the final sum faster.
+
+Code Breakdown (arr_sum_mpi.c):
+
+Includes:
+
+<stdio.h>: for standard input/output functions like printing.
+<mpi.h>: for functions related to MPI communication.
+Defines:
+
+arr_size: Sets the size of the array to be used (15 in this case).
+main function:
+
+This is where the program execution begins.
+Variables:
+
+rank: This variable holds the unique identifier (rank) of the current process. There will be one rank for each process involved.
+size: This variable stores the total number of processes running the program.
+MPI Initialization:
+
+MPI_Init(&argc, &argv): This function initializes the MPI environment and sets up communication between processes.
+Rank and Size Identification:
+
+MPI_Comm_rank(MPI_COMM_WORLD, &rank): This function finds out the rank of the current process.
+MPI_Comm_size(MPI_COMM_WORLD, &size): This function determines the total number of processes involved.
+Process 0 (Rank 0) Specific Code:
+
+This code block only executes on the process with rank 0 (usually the main or root process).
+Array and Local/Global Sums:
+
+int arr[]= {12,4,6,3,21,15,3,5,7,8,9,1,5,3,5}: This defines an array with the numbers to be summed.
+int global_sum = 0, local_sum = 0: These variables store the global sum (final sum) and the local sum (sum calculated by this process) respectively.
+Array Distribution (for divisible size):
+
+This part handles cases where the array size (arr_size) is perfectly divisible by the number of processes (size).
+It calculates the number of elements each process will handle (array_element_per_process).
+It creates a sub-array to hold the elements for this process.
+It sends chunks of the array (sub_arr) and the size of those chunks (array_element_per_process) to other processes using MPI_Send.
+Array Distribution (for non-divisible size):
+
+This part deals with cases where the array size isn't perfectly divisible by the number of processes.
+It calculates the size for each process considering the remainder elements.
+Similar to the previous section, it sends sub-arrays and their sizes to other processes.
+Local Sum Calculation (Rank 0):
+It calculates the local sum for process 0 by adding the elements in its portion of the array (arr).
+Global Sum Calculation (Rank 0):
+This part gathers the local sums from all processes to find the final global sum.
+It uses MPI_Recv to receive the local sums sent by other processes (recv_local_sum).
+It adds the received local sums to the local sum of process 0 (global_sum).
+Printing Results (Rank 0):
+It prints the final global sum of the array.
+Code for Other Processes (Rank != 0):
+This code executes on all processes except rank 0.
+Receiving Sub-array and Size:
+It uses MPI_Recv to receive the sub-array (recv_sub_arr) and its size (recv_array_element_per_process) sent by process 0.
+Local Sum Calculation:
+Similar to process 0, it calculates the local sum for its received sub-array.
+Sending Local Sum:
+It sends the calculated local sum back to process 0 using MPI_Send.
+MPI Finalization:
+MPI_Finalize(): This function cleans up the MPI environment and finalizes communication.
+
+Can you explain the purpose of this code? (Expected answer: To calculate the sum of an array using distributed computing with MPI)
+What is MPI and how does it help in this code? (Expected answer: MPI stands for Message Passing Interface. It facilitates communication between processes allowing them to work together on a task)
+Code Functionality:
+
+Explain the steps involved in the code for process 0 (rank 0). (Expected answer: Process 0 initializes the array, divides it into sub-arrays, sends them to other processes, calculates its local sum, gathers local sums from others, and finally calculates the global sum)
+How does the code handle cases where the array size is not perfectly divisible by the number of processes? (Expected answer: The code calculates sub-array sizes considering the remainder elements and sends them accordingly)
+What is the role of MPI_Send and MPI_Recv functions in the code? (Expected answer: MPI_Send is used to send sub-arrays and their sizes from process 0 to other processes. MPI_Recv is used by other processes to receive the sub-arrays and sizes from process 0, and also to send their local sums back to process 0)
+Benefits and Applications:
+
+What are the advantages of using MPI for this task? (Expected answer: MPI distributes the workload, leading to faster computation especially for large arrays)
+Can you give some real-world applications where MPI might be used? (Expected answer: MPI is used in various scientific computing tasks, simulations, and data analysis that involve processing large amounts of data)

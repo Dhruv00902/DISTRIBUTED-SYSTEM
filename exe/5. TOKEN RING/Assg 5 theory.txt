@@ -1,0 +1,84 @@
+In a distributed system, multiple computers or processes need to coordinate access to shared resources to prevent data corruption or inconsistencies. Mutual exclusion ensures that only one process can be in a critical section (a code block that modifies shared resources) at a time.
+
+Token Ring Algorithm
+
+The token ring algorithm is a simple and effective solution for mutual exclusion. Here's how it works:
+
+Logical Ring: Imagine the processes arranged in a logical ring. Each process knows its position and the neighbor to its right (next in the ring).
+Unique Token: A special token circulates around the ring continuously.
+Entering Critical Section: A process can only enter the critical section if it has the token.
+Passing the Token: Once a process finishes its critical section, it forwards the token to its neighbor.
+This guarantees that at most one process can hold the token at a time, ensuring mutual exclusion.
+
+Explanation of the Code (ring_token.c):
+
+Header Inclusions:
+
+stdio.h for standard input/output functions (e.g., printf)
+conio.h (may not be necessary or portable; consider getch alternatives)
+dos.h (likely not needed for modern systems; time functions are usually in time.h)
+<time.h> for time measurement (time)
+Variables:
+
+cs (critical section): A flag indicating if a process is in the critical section (0 = not in, 1 = in)
+pro (process number): Keeps track of the current process number
+run (time limit): Defines a maximum time a process can stay in the critical section (adjustable)
+key (user input): Stores the key pressed by the user
+t1, t2 (time variables): Used for timing the process's critical section duration
+Main Function:
+
+Initialization:
+
+Prints a message asking the user to press a key (except 'q') to enter a process.
+Prints instructions to press 'q' to exit.
+Initializes t1 with the current time minus 5 seconds (likely not relevant to the algorithm).
+Loop (until 'q' is pressed):
+
+Waiting Loop:
+
+This loop waits for the user to press a key using kbhit.
+If cs is non-zero (a process is in the critical section) and the time exceeds the run limit, it prints a message indicating the process exiting the critical section and sets cs back to 0.
+Key Handling:
+
+Reads the pressed key using getch.
+If the key is not 'q':
+If cs is non-zero (another process is in the critical section):
+Prints an error message indicating another process is already using the critical section.
+Otherwise (cs is zero):
+Prints a message indicating the current process entering the critical section.
+Increments pro to keep track of the process number.
+Sets cs to 1 to mark the critical section as occupied.
+Updates t1 with the current time to start timing the critical section duration.
+Output:
+
+The output will depend on the user's input and the run time limit. It will show messages like:
+
+"Press a key(except q) to enter a process into critical section."
+"Process %d entered critical section" when a process enters.
+"Process %d exits critical section" when a process exits (if it reached the time limit).
+"Error: Another process is currently executing critical section. Please wait till its execution is over" if a process tries to enter while another is already in
+
+This is a simplified simulation, not a real distributed system where processes communicate directly.
+The code uses some outdated libraries (conio.h, dos.h). Modern systems might use different ones.
+
+1. What is mutual exclusion in distributed systems?
+
+Explanation: Mutual exclusion ensures that only one process can access a shared resource (critical section) at a time, preventing data corruption or inconsistencies.
+2. Explain the concept of the token ring algorithm for mutual exclusion.
+
+Explanation: Imagine processes arranged in a logical ring. A unique token circulates continuously. A process can enter the critical section only if it has the token. Once finished, it passes the token to its neighbor.
+3. Briefly describe the functionality of the provided code (ring_token.c).
+
+Explanation: This code simulates the token ring algorithm conceptually. It doesn't involve actual token passing between processes. It tracks a critical section flag (cs) and process number (pro) to simulate turn-taking. Users press keys to enter/exit the critical section (simulating token possession).
+4. What is the purpose of the run variable in the code?
+
+Explanation: run defines a maximum time a process can stay in the critical section. This helps prevent a process from holding the "token" indefinitely.
+5. How would you improve the code for a more realistic simulation?
+
+Explanation: You could modify the code to involve communication between processes (simulating token passing) instead of user input. Consider using libraries for network communication.
+6. What are some limitations of the token ring algorithm?
+
+Explanation: The token ring can experience delays as the token travels around the ring. A process might have to wait a long time even if no one is using the critical section.
+7. Can you suggest alternative algorithms for mutual exclusion?
+
+Explanation: Some alternatives include semaphore-based algorithms, centralized server algorithms (like Lamport's Bakery algorithm), or optimistic concurrency control. Each has its own advantages and disadvantages.

@@ -1,0 +1,65 @@
+CalculatorServlet.java (Web Service):
+
+Imports:
+
+This section imports necessary libraries for the program to function. Libraries like javax.servlet are used for creating web servlets, and javax.xml.ws helps interact with web services.
+WebServiceRef Annotation:
+
+This line (@WebServiceRef(wsdlLocation = "WEBINF/wsdl/localhost_8080/Assignmentno7/MyCalculatorWebService.wsdl")) tells the program where to find the description (WSDL) of another web service it will interact with (in this case, likely a helper web service for the calculations).
+MyCalculatorWebService_Service:
+
+This line (private MyCalculatorWebService_Service service;) declares a variable service of type MyCalculatorWebService_Service. This variable will hold a reference to the web service we will be calling for calculations.
+processRequest Method:
+
+This method (processRequest(HttpServletRequest request, HttpServletResponse response)) is the heart of the web service. It gets called whenever the web service receives a request (in our case, from the webpage).
+
+Setting Response Content Type:
+
+response.setContentType("text/html;charset=UTF-8"); sets the type of content the web service will send back (HTML with UTF-8 character encoding).
+Getting User Input:
+
+It creates a PrintWriter object (out) to write the response HTML.
+It then retrieves the two numbers entered by the user from the webpage form using request.getParameter("number1") and request.getParameter("number2"). These methods return the values entered for the keys "number1" and "number2" in the webpage form.
+Calling Calculation Methods:
+
+It calls the appropriate calculation methods (addition, subtraction, multiplication, or division) based on the functionality requested by the webpage (these methods are defined later in the code). Each method takes the two user-entered numbers as arguments.
+Building the Response HTML:
+
+It builds the HTML code to display the calculation results on the webpage using out.println statements. It displays the addition, subtraction, multiplication, and division results.
+doGet and doPost Methods:**
+
+These methods (doGet and doPost) handle incoming requests from the webpage. They both ultimately call the processRequest method to handle the request.
+getServletInfo Method:
+
+This method (getServletInfo) is used to provide a brief description of the servlet, but its functionality isn't relevant to the main logic.
+Calculation Helper Methods:
+
+These methods (addition, subtraction, multiplication, and division) are private methods within the servlet class.
+Each method takes two numbers as arguments.
+They create a reference to the remote web service using the service variable.
+They call the corresponding method (add, subtract, multiply, or divide) on the remote web service, passing the user-entered numbers as arguments.
+The remote web service performs the calculation and returns the result.
+These methods within the servlet simply return the results received from the remote web service.
+Process:
+
+User Opens Webpage: The user opens the index.html file in their web browser.
+User Enters Numbers: The user enters two numbers in the form on the webpage.
+User Clicks Submit: When the user clicks the "submit" button, the browser sends a request to the web service (CalculatorServlet.java).
+Web Service Receives Request: The processRequest method in CalculatorServlet.java is called.
+Web Service Gets User Input: The servlet extracts the two numbers from the request using request.getParameter.
+Web Service Calls Remote Service (Optional): The calculation helper methods within the servlet might call a separate web service for the actual calculations (depending on the implementation).
+Web Service Calculates or Retrieves Results: The servlet performs the calculations itself (or retrieves them from the remote service) and stores the results.
+Web Service Builds Response: The servlet builds the HTML code containing the calculation results.
+Web Service Sends Response: The servlet sends the HTML response back to the user's browser.
+Webpage Displays Results: The user's browser receives the HTML response and displays the calculated results on the webpage
+
+What is a distributed system? (Explain: A distributed system is a collection of independent computers working together to achieve a common goal. In this experiment, the web service and the webpage form a distributed system.)
+What are the advantages and disadvantages of distributed systems? (Explain: Advantages include scalability, fault tolerance, and resource sharing. Disadvantages include complexity, overhead, and potential security risks.)
+What is the role of a web service in this experiment? (Explain: The web service acts as the server that provides the calculation functionality to the webpage client.)
+What is the role of the webpage in this experiment? (Explain: The webpage acts as the user interface where users can enter numbers and see the calculated results.)
+Code-Specific Questions:
+
+Explain the purpose of the @WebServiceRef annotation in the CalculatorServlet.java code. (Explain: This annotation tells the program where to find the description (WSDL) of another web service it might interact with for calculations.)
+How does the CalculatorServlet.java code retrieve the user-entered numbers from the webpage? (Explain: The code uses the request.getParameter("number1") and request.getParameter("number2") methods to extract the values from the form on the webpage.)
+What does the processRequest method in CalculatorServlet.java do? (Explain: This method is the core of the web service. It handles incoming requests, retrieves user input, performs calculations (or interacts with a remote service), and builds the HTML response containing the results.)
+Explain how the webpage (index.html) sends data to the web service. (Explain: When the user clicks the submit button, the browser sends an HTTP request containing the form data (numbers) to the web service URL.)

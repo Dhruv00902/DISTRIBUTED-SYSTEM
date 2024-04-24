@@ -1,0 +1,3 @@
+ctrl+R -> type regedit -> hkey local machine -> system -> current contro..something ->enum -> usb storage
+this pc right click -> manage -> device manager -> view(top bar madhe) -> choose 'show hidden device' -> usb serial bus controller(only mass storage device uninstall not other) anad usb serial bus device
+again repeat first step to check the history.

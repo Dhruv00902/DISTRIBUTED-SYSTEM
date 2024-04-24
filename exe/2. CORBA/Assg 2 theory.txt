@@ -1,0 +1,113 @@
+The experiment aims to develop a simple distributed application that demonstrates how two programs (client and server) can communicate and interact across a network using the CORBA (Common Object Request Broker Architecture) infrastructure and Java IDL (Interface Definition Language) mappings.
+
+Components and Functionality
+
+IDL Interface (Reverse.idl, not shown here): This file (not included in the code snippet) defines a remote interface named Reverse with a single operation, reverse_string(String str), that takes a string as input and returns its reversed version.
+ReverseClient.java: This program acts as the client application. It:
+Initializes the ORB (Object Request Broker) to connect to the CORBA infrastructure.
+Retrieves a reference to the naming service, which helps locate remote objects on the network.
+Uses the naming service to find a registered object named "Reverse" (the server object).
+Narrows the object reference to the Reverse interface type, allowing method calls.
+Prompts the user for a string to reverse.
+Calls the reverse_string method on the remote object, sending the user-entered string.
+Receives the reversed string from the server and prints it to the console.
+ReverseServer.java: This program acts as the server application. It:
+Initializes the ORB to connect to the CORBA infrastructure.
+Creates a POA (Portable Object Adapter) to manage object references and handle incoming client requests.
+Creates an instance of the ReverseImpl class (the actual implementation of the remote object).
+Obtains an object reference from the ReverseImpl object.
+Narrows the object reference to the Reverse interface type.
+Registers the object reference with the naming service under the name "Reverse," making it discoverable by clients.
+Starts the ORB to listen for incoming client requests.
+Code Breakdown (Step-by-Step)
+
+Client Initialization (ReverseClient.java):
+
+org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(args, null); initializes the ORB using command-line arguments (if provided).
+org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService"); retrieves a reference to the naming service.
+NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef); narrows the naming service reference to a more specific type.
+String name = "Reverse"; defines the name of the remote object to search for.
+ReverseImpl = ReverseHelper.narrow(ncRef.resolve_str(name)); finds the object named "Reverse" and narrows it to the Reverse interface.
+User Input and Remote Call:
+
+System.out.println("Enter String="); prompts the user for input.
+String str = br.readLine(); reads the user-entered string.
+String tempStr = ReverseImpl.reverse_string(str); calls the reverse_string method on the remote object, passing the user input.
+Receive and Print Result:
+
+System.out.println(tempStr); prints the received reversed string to the console.
+Server Initialization (ReverseServer.java):
+
+Similar to client initialization, the server sets up the ORB, POA, and object reference.
+Object Registration:
+
+org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService"); retrieves the naming service reference.
+NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef); narrows the reference.
+String name = "Reverse"; defines the registration name.
+NameComponent path[] = ncRef.to_name(name); converts the name to a format usable by the naming service.
+ncRef.rebind(path, h_ref); registers the server object with the naming service under the name "Reverse."
+Server Listening:
+
+System.out.println("Reverse Server reading and waiting...."); prints a message.
+orb.run(); starts the ORB, allowing the server to listen for incoming client requests.
+Server Object Implementation (ReverseImpl.java):
+
+ReverseImpl() is the constructor, printing
+
+What is a distributed system, and how does CORBA facilitate communication in such systems?
+
+Explanation: A distributed system consists of multiple computers (nodes) that communicate and coordinate to achieve a common goal. CORBA acts as a middleware layer that provides a platform-independent way for programs running on different nodes to interact with each other. It defines a standard interface for remote objects and manages communication details.
+Explain the role of IDL in this experiment.
+
+Explanation: IDL (Interface Definition Language) is used to define the interfaces (methods and parameters) of remote objects. This definition is used to generate client and server stubs/skeletons that handle communication details and object marshalling/unmarshalling. In this experiment, the Reverse.idl file (not shown) would define the Reverse interface with the reverse_string method.
+What are the steps involved in a client-server interaction using CORBA?
+
+Explanation: 1. Client initializes the ORB and retrieves a reference to the naming service. 2. Client uses the naming service to find the desired remote object. 3. Client narrows the object reference to the appropriate interface type. 4. Client makes a remote call by invoking a method on the interface. 5. Server receives the request, processes it, and sends a response. 6. Client receives the response and handles the result.
+Code-Specific Questions:
+
+In ReverseClient.java, what does the resolve_initial_references method do?
+
+Explanation: This method retrieves references to predefined CORBA services like the naming service. It uses command-line arguments (if provided) to locate these services.
+What is the purpose of narrowing object references in both client and server code?
+
+Explanation: Narrowing is used to cast a generic CORBA object reference to a specific interface type defined in the IDL. This allows the client and server to safely invoke methods on the remote object based on the defined interface.
+Explain the functionality of the POA (Portable Object Adapter) in the server code.
+
+Explanation: The POA manages object references and handles incoming client requests on the server side. It activates objects, processes requests, and returns responses.
+What does the reverse_string method in ReverseImpl.java do?
+
+Explanation: This method implements the logic for reversing a string. It takes a string as input, uses StringBuffer to reverse it, and returns the reversed string.
+
+1. Setting Up the Stage (Client and Server):
+
+Both the client and server code (ReverseClient.java and ReverseServer.java) use libraries (like CORBA) to connect and talk to each other.
+Client: It has a place to ask the user for a string to reverse.
+Server: It creates an object that can actually reverse strings.
+2. Finding Each Other (Client):
+
+The client asks a special service called the "Naming Service" (like a phone book) to find the server object named "Reverse."
+3. Making the Request (Client):
+
+Once the client finds the server object, it can call a method on that object named reverse_string. This method takes the user-entered string as input.
+4. Processing the Request (Server):
+
+The server receives the request and uses its special object (created earlier) to reverse the string.
+5. Sending the Response (Server):
+
+The server sends the reversed string back to the client.
+6. Receiving the Response (Client):
+
+The client receives the reversed string and prints it to the console.
+Step-by-Step Process (Combined):
+
+Server Starts (ReverseServer.java):
+Initializes CORBA and creates a special object adapter (POA).
+Creates a "ReverseImpl" object that reverses strings.
+Registers itself with the Naming Service under the name "Reverse."
+Waits for client requests.
+Client Starts (ReverseClient.java):
+Initializes CORBA and connects to the Naming Service.
+Looks up the "Reverse" object in the Naming Service.
+Prompts the user for a string to reverse.
+Sends the string to the "Reverse" object using the reverse_string method.
+Receives the reversed string and prints it

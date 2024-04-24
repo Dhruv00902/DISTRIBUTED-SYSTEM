@@ -1,0 +1,105 @@
+In a distributed system, computers (nodes) might have slightly different clocks due to hardware variations or software issues. This can lead to inconsistencies when coordinating tasks or events across the network. The Berkeley algorithm addresses this by establishing a central coordinator (master) and client nodes (slaves). The master periodically collects time readings from slaves, calculates an average time offset, and sends back synchronized times to adjust the slaves' clocks.
+
+Code Breakdown (Client.py):
+
+Imports:
+
+time: Provides functions for working with time.
+datetime: Used for parsing and manipulating date and time objects.
+threading: Enables creating and managing threads for parallel execution.
+socket: Used for network communication (creating sockets, connecting, sending/receiving data).
+Functions:
+
+startSendingTime(slave_client): This thread function continuously sends the client's current time to the server at 5-second intervals.
+startReceivingTime(slave_client): This thread function waits to receive the synchronized time from the server and prints it.
+initiateSlaveClient(port=8080):
+Creates a socket object (slave_client).
+Connects to the clock server on the local machine's default port (8080).
+Starts two threads:
+send_time_thread: Calls startSendingTime to send the client's time periodically.
+receive_time_thread: Calls startReceivingTime to wait for and print the synchronized time.
+Driver Code (if name == 'main' block):
+
+Calls initiateSlaveClient to start the client, which sends its time and receives synchronized time from the server.
+Code Breakdown (Server.py):
+
+Imports:
+
+functools: Provides utility functions, including reduce used for calculating the average in getAverageClockDiff.
+datetime: Same as in Client.py.
+threading: Same as in Client.py.
+socket: Same as in Client.py.
+Global Variable:
+
+client_data: A dictionary to store information about connected clients, including their addresses, clock times, and time differences.
+Functions:
+
+startReceivingClockTime(connector, address): This thread function continuously receives a client's clock time, calculates the difference with the server's time, and updates the client_data dictionary.
+startConnecting(master_server): This thread function listens for incoming client connections, accepts them, and starts a new thread for each client to call startReceivingClockTime.
+getAverageClockDiff():
+Creates a copy of client_data to avoid modifying it while iterating.
+Extracts a list of time differences from each client's data.
+Calculates the sum of these time differences using datetime.timedelta.
+Divides the sum by the number of clients to get the average time difference.
+synchronizeAllClocks(): This thread function periodically performs the following:
+Prints a message about starting a new synchronization cycle.
+Checks if there are any connected clients (len(client_data) > 0).
+If there are clients, calculates the average time difference using getAverageClockDiff.
+Iterates through each client in client_data:
+Calculates the synchronized time by adding the average time difference to the server's current time.
+Attempts to send the synchronized time to the client.
+Catches any exceptions (Exception) that might occur during sending.
+Prints a message if there are no clients for synchronization.
+initiateClockServer(port=8080):
+Creates a socket object (master_server).
+Sets a socket option to allow reuse of the address and port, even if a previous connection using them hasn't been completely closed.
+Binds the socket to an address (('', port)) to listen on all interfaces (empty string) and the specified port (8080).
+Starts listening for incoming connections (up to 10 clients can queue).
+Starts two threads:
+master_thread: Calls startConnecting to listen for and accept client connections.
+sync_thread: Calls synchronizeAllClocks to periodically calculate and send synchronized times.
+
+Step-by-Step Process:
+
+Client starts and connects to the server.
+Client thread 1 keeps sending the client's watch time to the server every 5 seconds.
+Server thread 1 listens for new clients and creates monitors for them.
+Server thread 2 (synchronization thread) checks for connected clients.
+If clients are present, the synchronization thread calculates the average watch time difference.
+The synchronization thread calculates a synchronized time based on the average difference.
+For each client, the synchronization thread tries to send the synchronized time back to their watch.
+Client thread 2 (if it hasn't received anything yet) waits for the synchronized time from the server and prints it.
+
+1. What is the purpose of the Berkeley algorithm?
+
+Explanation: The Berkeley algorithm is a distributed clock synchronization technique used to ensure that clocks in a network of computers (nodes) stay roughly in sync. This is important for tasks that require coordinated timing across the network.
+
+2. Briefly explain the roles of the client and server in this code.
+
+Explanation:  * Client: The client represents a node in the network. It periodically sends its current time to the server and waits to receive a synchronized time back.
+
+Server: The server acts as a central coordinator (master). It collects time readings from clients, calculates an average time offset, and sends back synchronized times to adjust the clients' clocks.
+3. How does the code handle clock drift?
+
+Explanation: The Berkeley algorithm doesn't directly address long-term clock drift (gradual variations in clock speed). However, by periodically sending time updates and calculating the average offset, it aims to minimize the impact of short-term fluctuations and keep clocks reasonably synchronized.
+
+4. What are some limitations of the Berkeley algorithm?
+
+Explanation:  * Single point of failure: If the server fails, clients can't synchronize their clocks.
+
+Security: Malicious clients could send incorrect timestamps, affecting the synchronization process.
+Limited accuracy: The algorithm doesn't account for long-term clock drift, which can accumulate over time.
+5. How could you improve the code for fault tolerance?
+
+Explanation: You could introduce redundant servers (backup masters) to handle server failures. Clients could connect to any available server for synchronization.
+
+6. Briefly explain the concept of threads in this code.
+
+Explanation: Threads allow the program to execute multiple tasks concurrently. In this code, threads are used for:  * Sending client time updates periodically.
+
+Receiving and waiting for synchronized time from the server.
+Listening for new client connections on the server.
+Performing periodic synchronization calculations on the server.
+7. What is the significance of the average_clock_difference calculation?
+
+Explanation: This calculation represents the average time offset between the clients' clocks and the server's clock. It's used to adjust the clients' clocks to a more synchronized state.

@@ -1,0 +1,67 @@
+This experiment aims to demonstrate process communication between a client and a server in a distributed system using the Remote Method Invocation (RMI) mechanism in Java. RMI allows objects on different machines to interact as if they were local.
+
+Distributed System:
+
+A distributed system consists of multiple computers (nodes) that communicate and cooperate to provide services or resources to users. RMI is a valuable tool for building such systems because it simplifies communication between components on different machines.
+
+Code Breakdown:
+
+1. Interface (Service)
+
+Defines a remote method receiveMessage(String message) that the client can invoke on the server.
+This method takes a string message as input.
+By declaring the interface as java.rmi.Remote, it becomes a remote interface, enabling RMI communication.
+2. Server (Server.java)
+
+Implements the Service interface.
+Maintains an ArrayList named messages to store received messages.
+Constructor (Server()) exports the server object using UnicastRemoteObject.exportObject(this, 0). This makes the server accessible remotely.
+receiveMessage(String message) method:
+Prints the received message to the console.
+Adds the message to the messages list.
+Main method:
+Creates a new Server object.
+Starts the RMI registry on port 1099 (if not already running) using LocateRegistry.createRegistry(1099).
+Binds the server object to the name "rmi://localhost/Service" using Naming.rebind(). This allows clients to locate the server.
+Prints a message indicating that the server is ready.
+3. Client (Client.java)
+
+Implements the Runnable interface, enabling it to run in a separate thread.
+Has a private field service of type Service.
+Constructor (Client(Service service)) takes a Service object as input and assigns it to the service field.
+run() method:
+Creates a Scanner object to read input from the user.
+Continuously prompts the user for messages in a loop.
+Uses service.receiveMessage(message) to send the entered message to the server. This method call invokes the remote method on the server.
+Catches potential RemoteException if there are communication issues.
+Main method:
+Looks up the remote Service object on the server using Naming.lookup("rmi://localhost/Service").
+Creates a Client object with the retrieved Service object.
+Creates a new thread from the Client object and starts it using thread.start(). This allows the client to send messages concurrently while waiting for user input.
+Catches potential Exception if there are issues during setup.
+Steps in Action:
+
+Server Startup: The server starts the RMI registry and registers itself under the name "rmi://localhost/Service".
+Client Connects: The client starts, looks up the server object using the registered name, and creates a connection.
+User Input: The client prompts the user to enter messages in a loop.
+Sending Messages: When the user enters a message, the client's run() method calls service.receiveMessage(message), which is a remote method invocation on the server. RMI handles the communication process behind the scenes.
+Server Receives: The server receives the message, prints it to the console, and stores it in the messages list.
+
+
+Process Steps:
+
+Server Startup:
+Server starts the RMI registry (if needed) and registers itself under the name "rmi://localhost/Service".
+Client Connects:
+Client starts, looks up the server object using the registered name, and creates a connection.
+User Input:
+Client prompts the user to enter messages.
+Sending Messages:
+User enters a message.
+Client's run() method calls service.receiveMessage(message), sending the message to the server.
+Server Receives:
+Server receives the message.
+It prints the message and stores it in the messages list.
+Output:
+
+The server will print the received messages to its console.
